@@ -1,0 +1,6 @@
+{
+  "name": "JOB TODAY KSA",
+  "description": "Professional recruitment and manpower portal for Saudi Arabia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

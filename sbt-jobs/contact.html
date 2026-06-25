@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - Shama Al Bayan Trading</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+  <!-- Top Contact Strip -->
+  <div class="top-contact-bar hidden md:block bg-slate-900 text-slate-300 text-xs py-2 px-6">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <div class="flex gap-6">
+        <span>📞 WhatsApp: +966 50 820 2459</span>
+        <span>📧 sbtservices7@sbtcabin.com</span>
+      </div>
+      <div>
+        <span>🇸🇦 Saudi Arabia Premier Recruitment Portal (English)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="main-navbar bg-white/95 sticky top-0 z-50 border-b border-slate-100">
+    <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
+      <div class="logo-block" onclick="window.location.href='index.html'">
+        <div class="logo-icon bg-blue-600 text-white font-extrabold text-xl w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">S</div>
+        <div class="logo-text">
+          <h1 class="text-blue-900 font-extrabold text-lg leading-none">SBT JOBS</h1>
+          <span class="text-[9px] font-bold text-slate-500 tracking-widest uppercase">Shama Al Bayan Trading</span>
+        </div>
+      </div>
+      <nav class="nav-links flex gap-8 items-center">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="jobs.html" class="nav-link">Search Jobs</a>
+        <a href="employers.html" class="nav-link">For Employers</a>
+        <a href="about.html" class="nav-link">About Us</a>
+        <a href="contact.html" class="nav-link active">Contact</a>
+        <a href="admin.html" class="nav-link">Admin Portal</a>
+      </nav>
+      <a href="apply.html" class="nav-cta bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-full hover:bg-emerald-700 transition">Apply Now</a>
+      <button id="mobile-menu-btn" class="mobile-menu-btn block md:hidden text-slate-600 p-2">☰</button>
+    </div>
+  </header>
+
+  <!-- Title Banner -->
+  <div class="bg-blue-900 text-white py-12 px-6">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-3xl font-extrabold">Contact SBT Services</h1>
+      <p class="text-blue-200 text-sm mt-2">Get in touch with our recruiting or corporate partnership managers.</p>
+    </div>
+  </div>
+
+  <!-- Contact layout -->
+  <section class="max-w-6xl mx-auto px-6 py-16 grid md:grid-cols-12 gap-12">
+    
+    <!-- Info panel (Col 5) -->
+    <div class="md:col-span-5 space-y-8">
+      <div>
+        <h2 class="text-xl font-extrabold text-blue-900">Reach Us Directly</h2>
+        <p class="text-xs text-slate-500 mt-2">Our corporate office handles candidate screenings and corporate partnership registrations daily.</p>
+      </div>
+
+      <div class="space-y-6">
+        <div class="flex gap-4">
+          <span class="bg-blue-50 text-blue-600 p-3 rounded-xl text-lg w-12 h-12 flex items-center justify-center">📍</span>
+          <div>
+            <h4 class="text-xs font-bold text-slate-900 uppercase">Headquarters</h4>
+            <p class="text-xs text-slate-500 mt-1">Shama Al Bayan Trading, Central Region Office, Riyadh, Saudi Arabia</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <span class="bg-blue-50 text-blue-600 p-3 rounded-xl text-lg w-12 h-12 flex items-center justify-center">📧</span>
+          <div>
+            <h4 class="text-xs font-bold text-slate-900 uppercase">Email Support</h4>
+            <a href="mailto:sbtservices7@sbtcabin.com" class="text-xs text-blue-600 font-bold hover:underline mt-1 block">sbtservices7@sbtcabin.com</a>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <span class="bg-blue-50 text-blue-600 p-3 rounded-xl text-lg w-12 h-12 flex items-center justify-center">💬</span>
+          <div>
+            <h4 class="text-xs font-bold text-slate-900 uppercase">WhatsApp Hotline</h4>
+            <a href="https://wa.me/966508202459" class="text-xs text-emerald-600 font-bold hover:underline mt-1 block">+966 50 820 2459</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Mock -->
+      <div class="bg-slate-200 h-48 rounded-2xl flex items-center justify-center text-center p-6 border border-slate-300">
+        <div>
+          <span class="text-2xl">🗺️</span>
+          <h4 class="text-xs font-bold text-slate-800 mt-2">Google Maps Area Map</h4>
+          <p class="text-[10px] text-slate-500 mt-1">Riyadh Industrial District Sourcing Yard</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sourcing message panel (Col 7) -->
+    <div class="md:col-span-7 bg-white p-8 rounded-3xl border border-slate-150">
+      
+      <!-- Contact Form -->
+      <form id="contact-form" class="space-y-6">
+        <div>
+          <h3 class="text-lg font-extrabold text-blue-950">Send an Inquiry</h3>
+          <p class="text-xs text-slate-400 mt-1">Fill out the form below. Our support representatives will respond within 24 working hours.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="form-label">Full Name *</label>
+            <input id="con-name" type="text" required placeholder="Your name" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Email Address *</label>
+            <input id="con-email" type="email" required placeholder="name@example.com" class="form-input">
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <label class="form-label">Phone Number *</label>
+            <input id="con-phone" type="tel" required placeholder="e.g. +966..." class="form-input">
+          </div>
+          <div>
+            <label class="form-label">Subject *</label>
+            <input id="con-subject" type="text" required placeholder="e.g. Manpower supply request" class="form-input">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Detailed Message *</label>
+          <textarea id="con-message" rows="5" required placeholder="Please provide details of your corporate sourcing query or personal application problem..." class="form-input"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3 rounded-xl transition shadow-lg shadow-blue-500/20">Send message</button>
+      </form>
+
+      <!-- Success panel (hidden by default) -->
+      <div id="contact-success-block" class="text-center py-12 space-y-4" style="display: none;">
+        <span class="text-4xl text-emerald-600 block">✉️</span>
+        <h3 class="text-xl font-extrabold text-blue-950">Inquiry Sent Successfully!</h3>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto">Your message has been logged inside our customer relations server. A regional partner or manager will get back to you shortly.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer bg-slate-950 text-slate-400 mt-16">
+    <div class="footer-contacts-strip bg-slate-900 text-white border-b border-slate-800 py-6 px-6">
+      <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-6">
+        <div class="footer-contact-block flex items-center gap-4">
+          <span class="bg-slate-800 text-blue-400 p-3 rounded-xl text-lg">📍</span>
+          <div class="footer-contact-text">
+            <h5>Headquarters</h5>
+            <p>Riyadh, Saudi Arabia</p>
+          </div>
+        </div>
+        <div class="footer-contact-block flex items-center gap-4">
+          <span class="bg-slate-800 text-blue-400 p-3 rounded-xl text-lg">📧</span>
+          <div class="footer-contact-text">
+            <h5>Email Support</h5>
+            <p><a href="mailto:sbtservices7@sbtcabin.com" class="hover:text-blue-400">sbtservices7@sbtcabin.com</a></p>
+          </div>
+        </div>
+        <div class="footer-contact-block flex items-center gap-4">
+          <span class="bg-slate-800 text-blue-400 p-3 rounded-xl text-lg">💬</span>
+          <div class="footer-contact-text">
+            <h5>WhatsApp / Hotline</h5>
+            <p><a href="https://wa.me/966508202459" class="hover:text-blue-400">+966 50 820 2459</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-body max-w-7xl mx-auto py-16 px-6 grid md:grid-cols-12 gap-12">
+      <div class="footer-brand md:col-span-6">
+        <div class="logo-block flex items-center gap-3">
+          <div class="logo-icon bg-blue-600 text-white font-extrabold text-lg w-8 h-8 rounded flex items-center justify-center">S</div>
+          <h4 class="text-white font-extrabold text-base">SBT JOBS</h4>
+        </div>
+        <p class="text-xs text-slate-400 mt-4 leading-relaxed">Shama Al Bayan Trading is a certified recruitment and staffing agency operating in Saudi Arabia. We connect qualified professionals with high-tier opportunities in Engineering, Safety, Administration, and Heavy Trades.</p>
+        <div class="footer-badge inline-flex items-center gap-2 bg-emerald-950/80 border border-emerald-900/30 text-emerald-400 font-bold text-[10px] px-4 py-1.5 rounded-full mt-6">
+          <span>🟢 Licensed Recruitment & Staffing Agency</span>
+        </div>
+      </div>
+      <div class="footer-col md:col-span-3">
+        <h4>Candidates</h4>
+        <ul class="footer-links space-y-3">
+          <li><a href="jobs.html">Search Vacancies</a></li>
+          <li><a href="apply.html">Submit General CV</a></li>
+          <li><a href="about.html">About SBT Services</a></li>
+          <li><a href="contact.html">Support Hotline</a></li>
+        </ul>
+      </div>
+      <div class="footer-col md:col-span-3">
+        <h4>Employers</h4>
+        <ul class="footer-links space-y-3">
+          <li><a href="employers.html">Our Services</a></li>
+          <li><a href="contact.html">Submit Sourcing Query</a></li>
+          <li><a href="login.html">Admin Dashboard</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom border-t border-slate-900 text-xs py-6 px-6 text-slate-500">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <p>© 2026 Shama Al Bayan Trading (SBT Services). All rights reserved.</p>
+        <p>Premium Corporate Job Portal • Saudi Arabia • SAR Display</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating WhatsApp Widget -->
+  <a href="https://wa.me/966508202459" target="_blank" class="floating-whatsapp" title="Chat with SBT Recruitment">
+    <span class="text-xl">💬</span>
+  </a>
+
+  <!-- Script Imports -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

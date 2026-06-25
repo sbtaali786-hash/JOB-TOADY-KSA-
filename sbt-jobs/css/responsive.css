@@ -1,0 +1,74 @@
+/* ==========================================================================
+   SBT Jobs - Responsive Media Queries Breakpoints
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .footer-body {
+    grid-template-cols: 1fr 1fr;
+    gap: 32px;
+  }
+  .footer-brand {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Header Mobile */
+  .nav-links, .nav-cta, .top-contact-bar {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: block !important;
+  }
+  
+  /* Hero */
+  .hero-section {
+    padding: 60px 16px;
+    text-align: center;
+  }
+  .hero-title {
+    font-size: 2rem;
+  }
+  .hero-desc {
+    font-size: 0.85rem;
+    margin: 12px auto 0;
+  }
+  .hero-ctas {
+    justify-content: center;
+  }
+  
+  /* Footer */
+  .footer-body {
+    grid-template-cols: 1fr;
+    gap: 32px;
+  }
+  .footer-brand {
+    grid-column: span 1;
+  }
+  .footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  /* Forms */
+  .form-grid {
+    grid-template-cols: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-ctas {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .btn-primary, .btn-secondary, .btn-whatsapp {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .job-card-actions {
+    grid-template-cols: 1fr;
+    gap: 8px;
+  }
+}

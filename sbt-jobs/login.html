@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - SBT Jobs</title>
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Custom stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen p-6">
+
+  <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
+    <div class="text-center mb-8">
+      <div onclick="window.location.href='index.html'" class="logo-block justify-center mb-4">
+        <div class="logo-icon bg-blue-600 text-white font-extrabold text-lg w-10 h-10 rounded-lg flex items-center justify-center">S</div>
+        <div class="logo-text text-left">
+          <h1 class="text-blue-900 font-extrabold text-base leading-none">SBT JOBS</h1>
+          <span class="text-[8px] font-bold text-slate-500 tracking-wider">ADMINISTRATIVE PORTAL</span>
+        </div>
+      </div>
+      <h2 class="text-xl font-extrabold text-slate-900 mt-2">Sign in to Dashboard</h2>
+      <p class="text-xs text-slate-400 mt-1">Manage jobs, shortlist applicants, and view messages.</p>
+    </div>
+
+    <!-- Alert Panel -->
+    <div id="login-alert" class="hidden bg-red-50 text-red-700 text-xs p-4 rounded-xl border border-red-100 mb-6"></div>
+
+    <form id="login-form" class="space-y-6">
+      <div>
+        <label class="form-label">Admin Email *</label>
+        <input id="login-email" type="email" required placeholder="admin@sbt.com" class="form-input">
+      </div>
+      <div>
+        <label class="form-label">Password *</label>
+        <input id="login-password" type="password" required placeholder="••••••••" class="form-input">
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 rounded-xl transition shadow-lg shadow-blue-500/20">Sign In</button>
+    </form>
+
+    <!-- Sandbox Notice -->
+    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mt-8 text-center text-[11px] text-slate-500">
+      <p class="font-bold text-slate-700">Sandbox Preview Credentials:</p>
+      <p class="mt-1 font-mono text-[10px] bg-white p-1.5 border rounded">Email: admin@sbt.com | Pass: admin123</p>
+      <p class="mt-2 text-[10px] text-slate-400">Works out-of-the-box before connecting your live Supabase database.</p>
+    </div>
+
+    <!-- Return to site -->
+    <div class="text-center mt-6">
+      <a href="index.html" class="text-xs text-slate-400 hover:text-blue-600 hover:underline">← Return to Public Website</a>
+    </div>
+  </div>
+
+  <!-- Script Imports -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('login-form');
+      const alertPanel = document.getElementById('login-alert');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertPanel.classList.add('hidden');
+
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.textContent = 'Checking Credentials...';
+        submitBtn.disabled = true;
+
+        try {
+          await window.SBT_AUTH.login(email, pass);
+          window.location.href = 'admin.html';
+        } catch (err) {
+          alertPanel.textContent = err.message;
+          alertPanel.classList.remove('hidden');
+        } finally {
+          submitBtn.textContent = 'Sign In';
+          submitBtn.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
