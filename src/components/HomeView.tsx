@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { Search, MapPin, Briefcase, Shield, Users, Trophy, ChevronRight, MessageSquare, Building2, CheckCircle2 } from 'lucide-react';
 import { Job } from '../types';
+import AdsterraBanner from './AdsterraBanner';
 
 interface HomeViewProps {
   jobs: Job[];
@@ -193,6 +194,9 @@ export default function HomeView({ jobs, onNavigate, onSearch }: HomeViewProps) 
           </div>
         </div>
       </section>
+
+      {/* Adsterra Sponsored Ad Placement */}
+      <AdsterraBanner />
 
       {/* Featured Jobs Section */}
       <section className="bg-white py-16 border-y border-gray-100">
