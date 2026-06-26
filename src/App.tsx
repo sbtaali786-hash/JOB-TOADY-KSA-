@@ -17,6 +17,7 @@ import AdminView from './components/AdminView';
 import { Job } from './types';
 import { db, supabase } from './supabase';
 import { MessageSquare } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>('home');
@@ -76,6 +77,35 @@ export default function App() {
     }
   }, []);
 
+  // Synchronize state with URL path on mount/load or popstate
+  const syncRouteWithUrl = (allJobs: Job[]) => {
+    const path = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+    const jobId = searchParams.get('id');
+
+    if (path === '/admin') {
+      setCurrentPage('admin');
+    } else if (path === '/jobs') {
+      if (jobId && allJobs.length > 0) {
+        const foundJob = allJobs.find(j => j.id === jobId);
+        if (foundJob) {
+          setSelectedJob(foundJob);
+          setCurrentPage('job-details');
+          return;
+        }
+      }
+      setCurrentPage('jobs');
+    } else if (path === '/employers') {
+      setCurrentPage('employers');
+    } else if (path === '/about') {
+      setCurrentPage('about');
+    } else if (path === '/contact') {
+      setCurrentPage('contact');
+    } else {
+      setCurrentPage('home');
+    }
+  };
+
   // Fetch jobs on mount
   useEffect(() => {
     loadJobsData();
@@ -86,6 +116,7 @@ export default function App() {
     try {
       const data = await db.getJobs();
       setJobs(data);
+      syncRouteWithUrl(data);
     } catch (e) {
       console.error('Error listing jobs:', e);
     } finally {
@@ -93,12 +124,35 @@ export default function App() {
     }
   };
 
+  // Watch for popstate to allow back/forward navigation to work flawlessly
+  useEffect(() => {
+    const handlePopState = () => {
+      syncRouteWithUrl(jobs);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [jobs]);
+
   const handleNavigate = (page: string, data?: any) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    if (page === 'job-details' && data) {
+    // Update URL path without full reload to keep default '/' to HomeView
+    if (page === 'admin') {
+      window.history.pushState({}, '', '/admin');
+    } else if (page === 'jobs') {
+      window.history.pushState({}, '', '/jobs');
+    } else if (page === 'employers') {
+      window.history.pushState({}, '', '/employers');
+    } else if (page === 'about') {
+      window.history.pushState({}, '', '/about');
+    } else if (page === 'contact') {
+      window.history.pushState({}, '', '/contact');
+    } else if (page === 'job-details' && data) {
+      window.history.pushState({}, '', `/jobs?id=${data.id}`);
       setSelectedJob(data);
+    } else {
+      window.history.pushState({}, '', '/');
     }
   };
 
@@ -228,6 +282,9 @@ export default function App() {
           WhatsApp JOB TODAY KSA Recruitment
         </span>
       </a>
+
+      {/* Vercel Web Analytics tracking */}
+      <Analytics />
 
     </div>
   );
