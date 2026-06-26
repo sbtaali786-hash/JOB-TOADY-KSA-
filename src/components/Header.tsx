@@ -19,40 +19,10 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'jobs', label: 'Jobs' },
-    { id: 'employers', label: 'Employers' },
-    { id: 'about', label: 'About Us' },
-    { id: 'contact', label: 'Contact' },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur-md">
-      {/* Top Bar for Contact info */}
-      <div className="hidden bg-blue-900 px-4 py-2 text-xs text-white sm:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <span className="flex items-center gap-1.5">
-              <Phone className="h-3.5 w-3.5 text-blue-300" />
-              <span>Call / WhatsApp: 0508202459</span>
-            </span>
-            <span>Email: sbtservices7@sbtcabin.com</span>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="rounded bg-blue-800 px-2 py-0.5 text-[10px] font-semibold text-blue-100 uppercase tracking-wider">
-              KSA Recruitment Support
-            </span>
-            <a 
-              href="https://wa.me/966508202459" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-blue-200 hover:text-white transition"
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              <span>Direct WhatsApp</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
       {/* Main Navbar */}
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
         {/* Logo */}
@@ -75,7 +45,7 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`text-sm font-semibold tracking-wide transition duration-150 border-b-2 py-1 ${
+              className={`text-sm font-semibold tracking-wide transition duration-150 border-b-2 py-1 cursor-pointer ${
                 currentPage === item.id || (item.id === 'jobs' && currentPage === 'job-details')
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-600 hover:border-gray-200 hover:text-blue-900'
@@ -85,11 +55,11 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
             </button>
           ))}
           
-          {isAdminLoggedIn ? (
+          {isAdminLoggedIn && (
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => onNavigate('admin')}
-                className={`rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                className={`rounded-full px-4 py-1.5 text-xs font-bold transition cursor-pointer ${
                   currentPage === 'admin'
                     ? 'bg-blue-600 text-white'
                     : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
@@ -99,45 +69,19 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
               </button>
               <button
                 onClick={onLogout}
-                className="text-xs font-semibold text-red-600 hover:text-red-700 transition"
+                className="text-xs font-semibold text-red-600 hover:text-red-700 transition cursor-pointer"
               >
                 Logout
               </button>
             </div>
-          ) : (
-            <button
-              onClick={() => onNavigate('login')}
-              className={`rounded-full border border-gray-200 px-4 py-1.5 text-xs font-semibold text-gray-700 transition hover:bg-gray-50 hover:text-blue-900 ${
-                currentPage === 'login' ? 'bg-gray-100 border-gray-300 text-blue-900' : ''
-              }`}
-            >
-              Admin Portal
-            </button>
           )}
-
-          <a
-            href="https://wa.me/966508202459"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-100 transition duration-150"
-          >
-            WhatsApp Us
-          </a>
         </nav>
 
         {/* Mobile Menu Button */}
         <div className="flex items-center space-x-3 md:hidden">
-          <a
-            href="https://wa.me/966508202459"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-emerald-600 p-2 text-white hover:bg-emerald-700 transition"
-          >
-            <MessageSquare className="h-4 w-4" />
-          </a>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="rounded-lg border border-gray-100 p-2 text-gray-700 hover:bg-gray-50 transition focus:outline-none"
+            className="rounded-lg border border-gray-100 p-2 text-gray-700 hover:bg-gray-50 transition focus:outline-none cursor-pointer"
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -155,7 +99,7 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
                   onNavigate(item.id);
                   setIsOpen(false);
                 }}
-                className={`text-left text-sm font-semibold py-1.5 ${
+                className={`text-left text-sm font-semibold py-1.5 cursor-pointer ${
                   currentPage === item.id ? 'text-blue-600' : 'text-gray-600 hover:text-blue-900'
                 }`}
               >
@@ -163,15 +107,15 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
               </button>
             ))}
             
-            <div className="border-t border-gray-100 pt-3">
-              {isAdminLoggedIn ? (
+            {isAdminLoggedIn && (
+              <div className="border-t border-gray-100 pt-3">
                 <div className="flex flex-col space-y-2">
                   <button
                     onClick={() => {
                       onNavigate('admin');
                       setIsOpen(false);
                     }}
-                    className="rounded-lg bg-blue-600 py-2 text-center text-sm font-bold text-white hover:bg-blue-700"
+                    className="rounded-lg bg-blue-600 py-2 text-center text-sm font-bold text-white hover:bg-blue-700 cursor-pointer"
                   >
                     Admin Dashboard
                   </button>
@@ -180,23 +124,13 @@ export default function Header({ currentPage, onNavigate, isAdminLoggedIn, onLog
                       onLogout();
                       setIsOpen(false);
                     }}
-                    className="text-center text-sm font-semibold text-red-600 hover:text-red-700 py-1"
+                    className="text-center text-sm font-semibold text-red-600 hover:text-red-700 py-1 cursor-pointer"
                   >
                     Logout
                   </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => {
-                    onNavigate('login');
-                    setIsOpen(false);
-                  }}
-                  className="w-full rounded-lg border border-gray-200 py-2 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50"
-                >
-                  Admin Portal
-                </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

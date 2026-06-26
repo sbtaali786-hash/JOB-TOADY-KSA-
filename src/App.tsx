@@ -83,7 +83,7 @@ export default function App() {
     const searchParams = new URLSearchParams(window.location.search);
     const jobId = searchParams.get('id');
 
-    if (path === '/admin') {
+    if (path === '/admin-login') {
       setCurrentPage('admin');
     } else if (path === '/jobs') {
       if (jobId && allJobs.length > 0) {
@@ -139,7 +139,7 @@ export default function App() {
     
     // Update URL path without full reload to keep default '/' to HomeView
     if (page === 'admin') {
-      window.history.pushState({}, '', '/admin');
+      window.history.pushState({}, '', '/admin-login');
     } else if (page === 'jobs') {
       window.history.pushState({}, '', '/jobs');
     } else if (page === 'employers') {
