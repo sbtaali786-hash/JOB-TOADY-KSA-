@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Briefcase, Filter, Calendar, DollarSign, X, MessageSquare } from 'lucide-react';
 import { Job } from '../types';
+import AdsterraNativeBanner from './AdsterraNativeBanner';
 
 interface JobsViewProps {
   jobs: Job[];
@@ -294,6 +295,7 @@ export default function JobsView({ jobs, onNavigate, initialFilters, onClearInit
           </div>
         </div>
       </div>
+      <AdsterraNativeBanner />
     </div>
   );
 }

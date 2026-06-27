@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { Search, MapPin, Briefcase, Calendar, Award, Clock, ChevronRight } from 'lucide-react';
 import { Job } from '../types';
 import AdsterraBanner from './AdsterraBanner';
+import AdsterraNativeBanner from './AdsterraNativeBanner';
 
 interface HomeViewProps {
   jobs: Job[];
@@ -253,6 +254,9 @@ export default function HomeView({ jobs, onNavigate, onSearch }: HomeViewProps) 
         )}
 
       </section>
+
+      {/* Responsive Native Ad Banner */}
+      <AdsterraNativeBanner />
     </div>
   );
 }
