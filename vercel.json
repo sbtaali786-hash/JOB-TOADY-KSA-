@@ -1,0 +1,41 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login.html",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin-login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/jobs",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/employers",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/((?!sbt-jobs|assets|favicon.ico|api).* )",
+      "destination": "/index.html"
+    }
+  ]
+}
