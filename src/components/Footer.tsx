@@ -42,8 +42,15 @@ export default function Footer({ onNavigate }: FooterProps) {
         {/* Bottom divider and copyright */}
         <div className="border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {currentYear} JOB TODAY KSA. All Rights Reserved.</p>
-          <div className="flex space-x-4">
+          <div className="flex space-x-4 items-center">
             <span>Powered by Supabase Security</span>
+            <span className="text-slate-700">•</span>
+            <button 
+              onClick={() => onNavigate('admin')} 
+              className="text-slate-500 hover:text-blue-400 font-semibold cursor-pointer transition-colors duration-150"
+            >
+              Admin Portal
+            </button>
           </div>
         </div>
       </div>
