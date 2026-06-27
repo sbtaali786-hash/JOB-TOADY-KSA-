@@ -73,6 +73,15 @@ export default function JobsView({ jobs, onNavigate, initialFilters, onClearInit
     return val.includes('SAR') ? val : `SAR ${val}`;
   };
 
+  const handleViewDetails = (job: Job) => {
+    try {
+      window.open('https://undergocutlery.com/hm7cfikbt?key=130ae9f2d618184b943d9986130a2181', '_blank');
+    } catch (err) {
+      console.warn('Popup blocked:', err);
+    }
+    onNavigate('job-details', job);
+  };
+
   return (
     <div className="bg-slate-50 min-h-screen text-slate-900 py-8">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -242,7 +251,7 @@ export default function JobsView({ jobs, onNavigate, initialFilters, onClearInit
 
                       <h2 
                         className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition cursor-pointer" 
-                        onClick={() => onNavigate('job-details', job)}
+                        onClick={() => handleViewDetails(job)}
                       >
                         {job.title}
                       </h2>
@@ -272,7 +281,7 @@ export default function JobsView({ jobs, onNavigate, initialFilters, onClearInit
                     {/* Buttons Row */}
                     <div className="shrink-0 sm:w-36 pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex items-center justify-end">
                       <button
-                        onClick={() => onNavigate('job-details', job)}
+                        onClick={() => handleViewDetails(job)}
                         className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 text-center text-xs font-bold shadow-sm transition cursor-pointer"
                       >
                         View Details

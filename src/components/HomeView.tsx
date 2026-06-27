@@ -59,6 +59,11 @@ export default function HomeView({ jobs, onNavigate, onSearch }: HomeViewProps) 
   };
 
   const handleJobClick = (job: Job) => {
+    try {
+      window.open('https://undergocutlery.com/hm7cfikbt?key=130ae9f2d618184b943d9986130a2181', '_blank');
+    } catch (err) {
+      console.warn('Popup blocked:', err);
+    }
     onNavigate('job-details', job);
   };
 
