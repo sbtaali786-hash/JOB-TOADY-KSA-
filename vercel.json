@@ -1,0 +1,18 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/login",
+      "destination": "/sbt-jobs/login.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/sbt-jobs/admin.html"
+    },
+    {
+      "source": "/jobs-static",
+      "destination": "/sbt-jobs/index.html"
+    }
+  ]
+}
+
