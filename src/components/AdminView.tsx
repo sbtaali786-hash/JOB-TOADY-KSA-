@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Briefcase, Mail, Plus, Edit2, Trash2, X, RefreshCw, Star, Search, Calendar, ChevronDown } from 'lucide-react';
+import { Briefcase, Mail, Plus, Edit2, Trash2, X, RefreshCw, Star, Search, Calendar, ChevronDown, UploadCloud, FileSpreadsheet, AlertCircle, CheckCircle, Download } from 'lucide-react';
 import { Job, ContactMessage } from '../types';
 import { db } from '../supabase';
 
@@ -49,6 +49,14 @@ export default function AdminView({ jobs, onRefreshJobs }: AdminViewProps) {
   const [contactPerson, setContactPerson] = useState('Recruitment Desk');
   const [isUrgent, setIsUrgent] = useState(false);
 
+  // Bulk upload modal states
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  const [bulkInputText, setBulkInputText] = useState('');
+  const [dragActive, setDragActive] = useState(false);
+  const [parsedBulkJobs, setParsedBulkJobs] = useState<Job[]>([]);
+  const [bulkErrors, setBulkErrors] = useState<string[]>([]);
+  const [isUploadingBulk, setIsUploadingBulk] = useState(false);
+
   useEffect(() => {
     fetchAdminData();
   }, []);
@@ -62,6 +70,238 @@ export default function AdminView({ jobs, onRefreshJobs }: AdminViewProps) {
       console.error('Failed to fetch admin dashboard details', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Download CSV template
+  const handleDownloadTemplate = () => {
+    const csvHeaders = [
+      'Title', 'Company', 'Location', 'Salary', 'Category', 'Job Type', 'Experience',
+      'Short Description', 'Description', 'Requirements', 'Benefits', 'Deadline',
+      'WhatsApp', 'Phone', 'Email', 'Duty Hours', 'Accommodation', 'Transportation',
+      'Food', 'Contact Person', 'Featured', 'Is Urgent'
+    ].join(',');
+
+    const sampleRow = [
+      '"HSE Inspector"', '"JOB TODAY KSA"', '"Riyadh, Saudi Arabia"', '"SAR 7,000 - 9,500"', '"Safety & HSE"', '"Full-time"', '"4+ Years"',
+      '"We are seeking a safety specialist to oversee daily operations and hazard preventions in construction sites."',
+      '"This is an exciting opportunity for safety specialists to oversee daily hazard preventions. Duties include performing routine safety audits and reporting."',
+      '"• OSHA or NEBOSH Certification\\n• Valid driving licence"',
+      '"• Company accommodation\\n• Full insurance cover"',
+      '"2026-09-30"', '"+966508202459"', '"+966508202459"', '"jobs@jobtodayksa.com"', '"8 Hours / Day"', '"Provided"', '"Provided"', '"Provided"', '"Recruitment Manager"', '"true"', '"false"'
+    ].join(',');
+
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + encodeURIComponent(`${csvHeaders}\n${sampleRow}`);
+    const link = document.createElement("a");
+    link.setAttribute("href", csvContent);
+    link.setAttribute("download", "jobs_bulk_template_jobtodayksa.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Helper to parse CSV/TSV
+  const parseBulkCSVAndTSVText = (text: string) => {
+    const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length < 2) {
+      setParsedBulkJobs([]);
+      setBulkErrors(['No data found or template header is missing.']);
+      return;
+    }
+
+    const headerLine = lines[0];
+    const isTabSeparated = headerLine.includes('\t');
+    const separator = isTabSeparated ? '\t' : ',';
+
+    const splitCSVLine = (line: string, sep: string): string[] => {
+      const result: string[] = [];
+      let curVal = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === sep && !inQuotes) {
+          result.push(curVal.trim().replace(/^"|"$/g, ''));
+          curVal = '';
+        } else {
+          curVal += char;
+        }
+      }
+      result.push(curVal.trim().replace(/^"|"$/g, ''));
+      return result;
+    };
+
+    const headers = splitCSVLine(headerLine, separator).map(h => h.trim().toLowerCase());
+    const parsedJobs: Job[] = [];
+    const errors: string[] = [];
+
+    const requiredHeaders = ['title', 'salary', 'short description', 'description'];
+    const missing = requiredHeaders.filter(h => !headers.includes(h));
+    if (missing.length > 0) {
+      setParsedBulkJobs([]);
+      setBulkErrors([`Missing required columns in your file header: "${missing.join(', ')}". Please download the sample template to view required columns.`]);
+      return;
+    }
+
+    for (let idx = 1; idx < lines.length; idx++) {
+      const rowLine = lines[idx];
+      const columns = splitCSVLine(rowLine, separator);
+      if (columns.length === 0 || (columns.length === 1 && !columns[0])) {
+        continue;
+      }
+
+      const getVal = (headerName: string, fallback: string = ''): string => {
+        const colIdx = headers.indexOf(headerName);
+        if (colIdx !== -1 && colIdx < columns.length) {
+          return columns[colIdx].trim() || fallback;
+        }
+        return fallback;
+      };
+
+      const title = getVal('title');
+      const company = getVal('company', 'JOB TODAY KSA');
+      const location = getVal('location', 'Riyadh, Saudi Arabia');
+      const salary = getVal('salary');
+      const category = getVal('category', 'Safety & HSE');
+      const jobTypeVal = getVal('job type', 'Full-time');
+      const experience = getVal('experience', '3+ Years');
+      const shortDesc = getVal('short description');
+      const description = getVal('description');
+      const requirements = getVal('requirements', '• NEBOSH IGC or OSHA Certification\n• Relevant years of KSA experience').replace(/\\n/g, '\n');
+      const benefits = getVal('benefits', '• Shared bachelor accommodation\n• Healthcare insurance cover\n• Flight tickets').replace(/\\n/g, '\n');
+      
+      let deadline = getVal('deadline');
+      if (!deadline) {
+        const futureDate = new Date();
+        futureDate.setDate(futureDate.getDate() + 60);
+        deadline = futureDate.toISOString().split('T')[0];
+      }
+
+      const whatsapp = getVal('whatsapp', '+966508202459');
+      const phone = getVal('phone', '+966508202459');
+      const email = getVal('email', 'jobs@jobtodayksa.com');
+      const dutyHours = getVal('duty hours', '8 Hours / Day');
+      const accommodation = getVal('accommodation', 'Provided by Company');
+      const transportation = getVal('transportation', 'Provided by Company');
+      const food = getVal('food', 'Provided');
+      const contactPerson = getVal('contact person', 'Recruitment Desk');
+      
+      const isUrgentVal = getVal('is urgent').toLowerCase();
+      const isUrgent = isUrgentVal === 'true' || isUrgentVal === 'yes' || isUrgentVal === '1';
+
+      const featuredVal = getVal('featured').toLowerCase();
+      const featured = featuredVal === 'true' || featuredVal === 'yes' || featuredVal === '1';
+
+      if (!title) {
+        errors.push(`Row ${idx + 1}: Job Title is blank.`);
+        continue;
+      }
+      if (!salary) {
+        errors.push(`Row ${idx + 1} (${title || 'Unnamed'}): Salary is blank.`);
+        continue;
+      }
+      if (!shortDesc) {
+        errors.push(`Row ${idx + 1} (${title}): Short description is blank.`);
+        continue;
+      }
+      if (!description) {
+        errors.push(`Row ${idx + 1} (${title}): Full description is blank.`);
+        continue;
+      }
+
+      let job_type: 'Full-time' | 'Part-time' | 'Contract' | 'Remote' = 'Full-time';
+      const typeLower = jobTypeVal.toLowerCase();
+      if (typeLower.includes('part')) job_type = 'Part-time';
+      else if (typeLower.includes('contract')) job_type = 'Contract';
+      else if (typeLower.includes('remote')) job_type = 'Remote';
+
+      const job: Job = {
+        id: 'job-' + Date.now().toString() + '-' + idx + '-' + Math.random().toString(36).substring(2, 5),
+        title,
+        company,
+        location,
+        salary,
+        category,
+        job_type,
+        experience,
+        short_description: shortDesc,
+        description,
+        requirements,
+        benefits,
+        featured,
+        status: 'active',
+        posted_at: new Date().toISOString(),
+        deadline,
+        whatsapp_number: whatsapp,
+        phone_number: phone,
+        email_address: email,
+        duty_hours: dutyHours,
+        accommodation,
+        transportation,
+        food,
+        contact_person: contactPerson,
+        is_urgent: isUrgent
+      };
+
+      parsedJobs.push(job);
+    }
+
+    setParsedBulkJobs(parsedJobs);
+    setBulkErrors(errors);
+  };
+
+  const handleBulkTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setBulkInputText(val);
+    parseBulkCSVAndTSVText(val);
+  };
+
+  const processFileContent = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      setBulkInputText(text);
+      parseBulkCSVAndTSVText(text);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processFileContent(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      processFileContent(e.target.files[0]);
+    }
+  };
+
+  const handleCommitBulkUpload = async () => {
+    if (parsedBulkJobs.length === 0) {
+      alert('No valid jobs are ready to upload. Please review your file and template requirements.');
+      return;
+    }
+
+    setIsUploadingBulk(true);
+    try {
+      await db.saveJobsBulk(parsedBulkJobs);
+      await onRefreshJobs();
+      alert(`Successfully uploaded ${parsedBulkJobs.length} new jobs to the platform!`);
+      
+      setShowBulkModal(false);
+      setBulkInputText('');
+      setParsedBulkJobs([]);
+      setBulkErrors([]);
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred during bulk jobs submission.');
+    } finally {
+      setIsUploadingBulk(false);
     }
   };
 
@@ -230,13 +470,25 @@ export default function AdminView({ jobs, onRefreshJobs }: AdminViewProps) {
           <p className="text-xs text-gray-500 mt-1">Add job offerings, manage active status, and view direct contact messages.</p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={fetchAdminData}
             className="rounded-xl border border-gray-200 bg-white p-2.5 text-gray-700 hover:bg-gray-50 transition shadow-sm cursor-pointer"
             title="Refresh database entries"
           >
             <RefreshCw className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => {
+              setBulkInputText('');
+              setParsedBulkJobs([]);
+              setBulkErrors([]);
+              setShowBulkModal(true);
+            }}
+            className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold text-gray-700 shadow-sm hover:bg-gray-50 transition cursor-pointer"
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+            <span>Bulk Upload (Excel/CSV)</span>
           </button>
           <button
             onClick={handleAddJobClick}
@@ -677,6 +929,213 @@ export default function AdminView({ jobs, onRefreshJobs }: AdminViewProps) {
                 Save Job Details & Deploy
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {/* ================= BULK JOBS UPLOAD MODAL ================= */}
+      {showBulkModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-blue-950/40 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-4xl rounded-2xl bg-white p-6 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
+            
+            {/* Modal Close Button */}
+            <button
+              onClick={() => setShowBulkModal(false)}
+              className="absolute top-4 right-4 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Header */}
+            <div className="border-b border-gray-50 pb-4 mb-6">
+              <div className="flex items-center gap-2 mb-1">
+                <FileSpreadsheet className="h-6 w-6 text-blue-600" />
+                <h2 className="text-lg font-extrabold text-blue-950">Bulk Import Job Vacancies</h2>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Add hundreds of job postings simultaneously. You can download our template, modify it, and upload or paste the content directly.
+              </p>
+            </div>
+
+            {/* Template Download Prompt */}
+            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex gap-2.5 items-start text-xs">
+                <AlertCircle className="h-4.5 w-4.5 shrink-0 text-blue-600 mt-0.5" />
+                <div>
+                  <span className="font-bold text-blue-950 block">Need the exact CSV layout?</span>
+                  <span className="text-gray-500 text-[11px] block mt-0.5 leading-relaxed">
+                    Download our official template. It includes columns for Job Title, Company, Category, WhatsApp/Email, Salary displays, and other recruiting configurations.
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleDownloadTemplate}
+                className="flex items-center gap-1.5 shrink-0 rounded-xl bg-white border border-blue-200 text-blue-700 px-3.5 py-2 text-xs font-bold hover:bg-blue-50 transition cursor-pointer shadow-sm"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>Get Template CSV</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              {/* Left Side: Upload or Paste */}
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold text-gray-600 uppercase tracking-wider">Step 1: Choose Import Method</h3>
+                
+                {/* Drag and Drop Box */}
+                <div 
+                  onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+                  onDragLeave={() => setDragActive(false)}
+                  onDrop={handleFileDrop}
+                  className={`border-2 border-dashed rounded-2xl p-6 text-center transition flex flex-col items-center justify-center cursor-pointer ${
+                    dragActive 
+                      ? 'border-blue-600 bg-blue-50/30' 
+                      : 'border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300'
+                  }`}
+                  onClick={() => document.getElementById('bulk-file-input')?.click()}
+                >
+                  <input 
+                    type="file" 
+                    id="bulk-file-input" 
+                    className="hidden" 
+                    accept=".csv, .txt" 
+                    onChange={handleFileSelect} 
+                  />
+                  <UploadCloud className="h-8 w-8 text-blue-500 mb-2" />
+                  <span className="text-xs font-bold text-gray-700 block">Drag & Drop your CSV file here</span>
+                  <span className="text-[10px] text-gray-400 block mt-0.5">or click to browse local files</span>
+                </div>
+
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-gray-100"></div>
+                  <span className="flex-shrink mx-4 text-[10px] text-gray-400 font-bold uppercase tracking-widest">or paste data directly</span>
+                  <div className="flex-grow border-t border-gray-100"></div>
+                </div>
+
+                {/* Paste Text Area */}
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-600 uppercase tracking-wider mb-1.5">Paste Excel Table / CSV Rows</label>
+                  <textarea
+                    rows={6}
+                    value={bulkInputText}
+                    onChange={handleBulkTextChange}
+                    placeholder="Title,Company,Location,Salary,Category,Job Type,Experience,Short Description,Description&#10;&quot;HSE Specialist&quot;,&quot;JOB TODAY KSA&quot;,&quot;Jubail&quot;,&quot;SAR 9,000&quot;,&quot;Safety & HSE&quot;,&quot;Full-time&quot;,&quot;5 Years&quot;,&quot;Quick summary...&quot;,&quot;Full description...&quot;"
+                    className="w-full rounded-xl border border-gray-200 p-3 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white font-mono leading-relaxed"
+                  />
+                  <span className="text-[10px] text-gray-400 block mt-1 leading-normal">
+                    Tip: Copy rows from Excel, Google Sheets, or a text editor and paste them straight here. Tab-separated data is supported!
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Side: Parsing Summary & Warnings */}
+              <div className="flex flex-col h-full min-h-[300px]">
+                <h3 className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-4">Step 2: Preview & Validation</h3>
+                
+                {/* Feedback panels */}
+                <div className="flex-1 space-y-4 overflow-y-auto max-h-[360px] pr-1">
+                  
+                  {/* Ready to upload status */}
+                  {parsedBulkJobs.length > 0 && (
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 flex gap-2.5 items-start text-xs text-emerald-800">
+                      <CheckCircle className="h-4.5 w-4.5 shrink-0 text-emerald-600 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-emerald-950">
+                          {parsedBulkJobs.length} Jobs Ready to Import!
+                        </span>
+                        <span className="text-[11px] block mt-0.5 leading-normal">
+                          All columns conform to system standards. Press "Import Jobs" below to commit these entries to the databases.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Errors / Warnings log */}
+                  {bulkErrors.length > 0 && (
+                    <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-4 flex gap-2.5 items-start text-xs text-amber-800">
+                      <AlertCircle className="h-4.5 w-4.5 shrink-0 text-amber-600 mt-0.5" />
+                      <div>
+                        <span className="font-bold block text-amber-950">
+                          Validation Warnings ({bulkErrors.length})
+                        </span>
+                        <div className="mt-1.5 space-y-1 max-h-36 overflow-y-auto text-[10px] font-mono pr-1">
+                          {bulkErrors.map((err, i) => (
+                            <p key={i} className="leading-tight">• {err}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Empty state when nothing uploaded */}
+                  {parsedBulkJobs.length === 0 && bulkErrors.length === 0 && (
+                    <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center flex flex-col items-center justify-center text-gray-400 h-full">
+                      <FileSpreadsheet className="h-8 w-8 mb-2 text-gray-300" />
+                      <span className="text-xs font-bold block">No preview data loaded</span>
+                      <span className="text-[10px] mt-0.5 leading-relaxed block max-w-[240px]">
+                        Upload a CSV file or paste spreadsheet columns on the left to see parsing validation here.
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Parsed jobs scroll lists preview */}
+                  {parsedBulkJobs.length > 0 && (
+                    <div className="border border-gray-100 rounded-xl overflow-hidden bg-white">
+                      <div className="bg-gray-50 border-b border-gray-100 px-3 py-2 text-[10px] uppercase font-bold tracking-wider text-gray-400">
+                        Parsed listings preview list
+                      </div>
+                      <div className="divide-y divide-gray-50 max-h-48 overflow-y-auto">
+                        {parsedBulkJobs.map((j, i) => (
+                          <div key={i} className="p-2.5 text-[11px] flex justify-between gap-4">
+                            <div>
+                              <strong className="text-blue-950 block leading-tight">{j.title}</strong>
+                              <span className="text-gray-400 text-[9px] font-semibold block">{j.company} • {j.category}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-blue-900 font-bold block">{j.salary}</span>
+                              <span className="text-gray-400 text-[9px] block">{j.location}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Actions Row */}
+            <div className="border-t border-gray-50 pt-4 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowBulkModal(false)}
+                className="rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2.5 text-xs font-bold transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              
+              <button
+                type="button"
+                onClick={handleCommitBulkUpload}
+                disabled={parsedBulkJobs.length === 0 || isUploadingBulk}
+                className={`flex items-center gap-1.5 rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md shadow-blue-100 hover:bg-blue-700 transition cursor-pointer ${
+                  (parsedBulkJobs.length === 0 || isUploadingBulk) ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isUploadingBulk ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <span>Importing...</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Deploy {parsedBulkJobs.length} parsed jobs</span>
+                  </>
+                )}
+              </button>
+            </div>
+
           </div>
         </div>
       )}

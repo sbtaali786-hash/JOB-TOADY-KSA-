@@ -478,6 +478,28 @@ export const db = {
     return job;
   },
 
+  async saveJobsBulk(jobsList: Job[]): Promise<boolean> {
+    if (supabase) {
+      const { error } = await supabase
+        .from('jobs')
+        .upsert(jobsList);
+      if (!error) return true;
+      console.error('Supabase saveJobsBulk failed. Saving to LocalStorage instead.', error);
+    }
+
+    const jobs = await this.getJobs();
+    for (const job of jobsList) {
+      const idx = jobs.findIndex(j => j.id === job.id);
+      if (idx !== -1) {
+        jobs[idx] = { ...job };
+      } else {
+        jobs.unshift(job);
+      }
+    }
+    localStorage.setItem('job_today_ksa_jobs', JSON.stringify(jobs));
+    return true;
+  },
+
   async deleteJob(id: string): Promise<boolean> {
     if (supabase) {
       const { error } = await supabase

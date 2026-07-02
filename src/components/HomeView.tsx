@@ -167,7 +167,7 @@ export default function HomeView({ jobs, onNavigate, onSearch }: HomeViewProps) 
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredJobs.slice(0, visibleCount).map((job) => (
+            {filteredJobs.map((job) => (
               <div
                 key={job.id}
                 onClick={() => handleJobClick(job)}
@@ -237,19 +237,6 @@ export default function HomeView({ jobs, onNavigate, onSearch }: HomeViewProps) 
 
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Load More Button */}
-        {filteredJobs.length > visibleCount && (
-          <div className="mt-8 text-center">
-            <button
-              onClick={() => setVisibleCount(prev => prev + 5)}
-              className="inline-flex items-center gap-1 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 px-6 py-3 text-xs font-extrabold text-slate-700 shadow-sm transition cursor-pointer"
-            >
-              <span>Load More Jobs</span>
-              <ChevronRight className="h-4 w-4" />
-            </button>
           </div>
         )}
 

@@ -58,7 +58,7 @@ export default function LoginView({ onLoginSuccess, onNavigate }: LoginViewProps
           onLoginSuccess(email);
           onNavigate('admin');
         } else {
-          setError('Invalid credentials. Please use the master password "admin12512".');
+          setError('Invalid credentials. Please check your admin details.');
         }
       }
     } catch (err: any) {
@@ -79,19 +79,6 @@ export default function LoginView({ onLoginSuccess, onNavigate }: LoginViewProps
 
       <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
         
-        {/* Connection status notification */}
-        <div className="mb-6 rounded-xl p-3.5 flex items-start gap-2.5 text-xs border bg-blue-50 border-blue-100 text-blue-700">
-          <Info className="h-4 w-4 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-bold block text-blue-900">
-              Admin Portal Security
-            </span>
-            <span className="text-[11px] block mt-0.5 leading-relaxed">
-              Use the authorized master password <strong className="font-black text-blue-900 underline">admin12512</strong> along with any email address to open and manage the JOB TODAY KSA admin dashboard.
-            </span>
-          </div>
-        </div>
-
         {error && (
           <div className="mb-4 rounded-xl bg-red-50 border border-red-100 p-3 text-xs text-red-600 font-medium flex items-center gap-1.5">
             <ShieldAlert className="h-4 w-4 shrink-0" />

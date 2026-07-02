@@ -85,14 +85,13 @@ export default function ContactView() {
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Call / WhatsApp</h3>
-                  <a href="tel:0508202459" className="text-sm font-bold text-blue-950 hover:text-blue-600 transition block mt-0.5">
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Direct Phone & WhatsApp</h3>
+                  <span className="text-sm font-extrabold text-blue-950 block mt-1 select-all font-mono">
                     0508202459
-                  </a>
-                  <a href="https://wa.me/966508202459" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-emerald-600 font-bold mt-1.5 hover:underline">
-                    <MessageSquare className="h-3.5 w-3.5" />
-                    <span>Chat on WhatsApp</span>
-                  </a>
+                  </span>
+                  <span className="text-xs text-gray-400 block mt-0.5 font-medium">
+                    (Direct Recruitment Desk / Inquiry Support)
+                  </span>
                 </div>
               </div>
 

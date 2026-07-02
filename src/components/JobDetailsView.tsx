@@ -117,6 +117,46 @@ export default function JobDetailsView({ job, allJobs, onNavigate }: JobDetailsV
     return `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   };
 
+  const renderContactValue = (val: string | undefined, defaultVal: string) => {
+    const text = val ? val.trim() : defaultVal;
+    
+    // Check if it looks like a URL/link
+    const isUrl = /^(https?:\/\/|www\.)[^\s]+$/i.test(text) || 
+                  /\b[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i.test(text);
+
+    if (isUrl) {
+      const url = text.match(/^https?:\/\//i) ? text : `https://${text}`;
+      return (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline transition inline-flex items-center gap-1 cursor-pointer"
+        >
+          <span className="break-all">{text}</span>
+        </a>
+      );
+    }
+
+    // Check if it has digits (like a phone/WhatsApp number)
+    const digitsOnly = text.replace(/[^0-9]/g, '');
+    if (digitsOnly.length >= 7) {
+      return (
+        <a
+          href={getWhatsAppUrl(text, job.title)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-mono font-bold text-emerald-600 hover:text-emerald-800 hover:underline transition inline-flex items-center gap-1 cursor-pointer"
+        >
+          <span>{text}</span>
+          <span className="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded font-sans font-black uppercase tracking-wider">WhatsApp</span>
+        </a>
+      );
+    }
+
+    return <span className="text-xs text-slate-900 font-bold select-all">{text}</span>;
+  };
+
   // Submit Application Form
   const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -357,29 +397,28 @@ export default function JobDetailsView({ job, allJobs, onNavigate }: JobDetailsV
 
               <div className="relative flex py-2 items-center">
                 <div className="flex-grow border-t border-slate-100"></div>
-                <span className="flex-shrink mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Or Contact Directly</span>
+                <span className="flex-shrink mx-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Contact Details</span>
                 <div className="flex-grow border-t border-slate-100"></div>
               </div>
 
-              {/* WhatsApp Button */}
-              <a
-                href={getWhatsAppUrl(job.whatsapp_number, job.title)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3 shadow-md shadow-emerald-100 transition text-xs text-center"
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>Contact via WhatsApp</span>
-              </a>
+              {/* Simple Text with Smart Interactive link/WhatsApp parsing */}
+              <div className="rounded-xl border border-slate-150 bg-slate-50/70 p-3.5 text-xs text-slate-700 space-y-3.5">
+                <div className="flex items-start gap-2.5">
+                  <MessageSquare className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">WhatsApp Contact</span>
+                    {renderContactValue(job.whatsapp_number, '+966 50 820 2459')}
+                  </div>
+                </div>
 
-              {/* Call Phone Button */}
-              <a
-                href={getPhoneUrl(job.phone_number)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-black text-white font-extrabold py-3 shadow-md transition text-xs text-center"
-              >
-                <Phone className="h-4 w-4" />
-                <span>Call Recruitment Desk</span>
-              </a>
+                <div className="flex items-start gap-2.5 pt-3 border-t border-slate-100">
+                  <Phone className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Direct Number / Info</span>
+                    {renderContactValue(job.phone_number, '+966 50 820 2459')}
+                  </div>
+                </div>
+              </div>
 
               {/* Email Contact Button */}
               <a
