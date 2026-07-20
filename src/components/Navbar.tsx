@@ -16,6 +16,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-logo">
+          <span style={{color: 'yellow', fontSize: '10px'}}>{JSON.stringify(profile)}</span>
           Job Today <span>KSA</span>
         </Link>
 
